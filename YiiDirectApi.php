@@ -73,6 +73,23 @@ class YiiDirectApi extends CApplicationComponent
 	 */
 	private $_login;
 
+	/**
+	 * Curl
+	 * @var Curl
+	 */
+	private $_ch;
+	private $_curlOptions = array(
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_AUTOREFERER    => true,
+		CURLOPT_CONNECTTIMEOUT => 10,
+		CURLOPT_TIMEOUT        => 10,
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:5.0) Gecko/20110619 Firefox/5.0',
+		CURLOPT_TIMEOUT => 0,
+		CURLOPT_POST => true,
+	);
+
 	const AUTHORIZE_URL = 'https://oauth.yandex.ru/authorize';
 	const TOKEN_URL = 'https://oauth.yandex.ru/token';
 	const JSON_API_URL = 'https://api.direct.yandex.ru/v4/json/';
@@ -141,11 +158,16 @@ class YiiDirectApi extends CApplicationComponent
 
 	public function init()
 	{
+		# Инициализируем CURL
+		$this->_ch = curl_init();
+		curl_setopt_array($this->_ch, $this->_curlOptions);
+		curl_setopt($this->_ch, CURLOPT_URL, self::JSON_API_URL});
+
 		# Установим строку для авторизации
 		$this->_authorizeLink = self::AUTHORIZE_URL . '?' . http_build_query(array(
-				'response_type' => $this->responseType,
-				'client_id' => $this->id,
-			));
+			'response_type' => $this->responseType,
+			'client_id' => $this->id,
+		));
 
 		# Если язык не установлен, тогда возьмем его из установок приложения
 		if (!$this->locale) {
@@ -298,6 +320,22 @@ class YiiDirectApi extends CApplicationComponent
 	}
 
 	/**
+	 * Выполняем запрос
+	 * @return array
+	 */
+	private function _execCurl($data) 
+	{
+		curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $data);
+		$c = curl_exec($this->_ch);
+		if (curl_errno($this->_ch)) {
+			throw new CException(curl_error($this->_ch));
+			$c = false;
+		}
+
+		return $c;
+	}
+
+	/**
 	 * Запрос к API
 	 * @param string $method
 	 * @param array $params
@@ -318,7 +356,7 @@ class YiiDirectApi extends CApplicationComponent
 		$params = $this->utf8($params);
 		$params = CJSON::encode($params);
 
-		$result = Yii::app()->curl->setOption(CURLOPT_TIMEOUT, 0)->post(self::JSON_API_URL, $params);
+		$result = $this->_execCurl($params);
 		$result = CJSON::decode($result);
 
 		# Если все прошло без ошибок
