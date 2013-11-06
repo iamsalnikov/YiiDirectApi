@@ -161,7 +161,7 @@ class YiiDirectApi extends CApplicationComponent
 		# Инициализируем CURL
 		$this->_ch = curl_init();
 		curl_setopt_array($this->_ch, $this->_curlOptions);
-		curl_setopt($this->_ch, CURLOPT_URL, self::JSON_API_URL});
+		curl_setopt($this->_ch, CURLOPT_URL, self::JSON_API_URL);
 
 		# Установим строку для авторизации
 		$this->_authorizeLink = self::AUTHORIZE_URL . '?' . http_build_query(array(
