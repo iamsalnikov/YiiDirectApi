@@ -158,9 +158,9 @@ class YiiDirectApi extends CApplicationComponent
 
 		# Установим строку для авторизации
 		$this->_authorizeLink = self::AUTHORIZE_URL . '?' . http_build_query(array(
-				'response_type' => $this->responseType,
-				'client_id' => $this->id,
-			));
+			'response_type' => $this->responseType,
+			'client_id' => $this->id,
+		));
 
 		# Если язык не установлен, тогда возьмем его из установок приложения
 		if (!$this->locale) {
