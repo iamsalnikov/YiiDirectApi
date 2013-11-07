@@ -2,6 +2,61 @@
 /**
  * Компонент для работы с API Yandex.Direct
  * @author Alexey Salnikov <me@iamsalnikov.ru>
+ *
+ * @method archiveCampaign($param = array())
+ * @method createOrUpdateCampaign($param = array())
+ * @method deleteCampaign($param = array())
+ * @method getCampaignParams($param = array())
+ * @method getCampaignsList($param = array())
+ * @method getCampaignsListFilter($param = array())
+ * @method getCampaignsParams($param = array())
+ * @method resumeCampaign($param = array())
+ * @method stopCampaign($param = array())
+ * @method unArchiveCampaign($param = array())
+ *
+ * @method archiveBanners($param = array())
+ * @method createOrUpdateBanners($param = array())
+ * @method deleteBanners($param = array())
+ * @method getBanners($param = array())
+ * @method getBannerPhrases($param = array())
+ * @method getBannerPhrasesFilter($param = array())
+ * @method moderateBanners($param = array())
+ * @method resumeBanners($param = array())
+ * @method stopBanners($param = array())
+ * @method unArchiveBanners($param = array())
+ *
+ * @method setAutoPrice($param = array())
+ * @method updatePrices($param = array())
+ *
+ * @method getBalance($param = array())
+ * @method getSummaryStat($param = array())
+ * @method createNewReport($param = array())
+ * @method deleteReport($param = array())
+ * @method getReportList()
+ * @method createNewWordstatReport($param = array())
+ * @method deleteWordstatReport($param = array())
+ * @method getWordstatReport($param = array())
+ * @method getWordstatReportList()
+ * @method createNewForecast($param = array())
+ * @method deleteForecastReport($param = array())
+ * @method getForecast($param = array())
+ * @method getForecastList()
+ *
+ * @method createNewSubclient($params = array())
+ * @method getClientInfo($param = array())
+ * @method getClientsList($param = array())
+ * @method getClientsUnits($param = array())
+ * @method getSubClients($param = array())
+ * @method updateClientInfo($param = array())
+ *
+ * @method getAvailableVersions()
+ * @method getChanges($param = array())
+ * @method getRegions()
+ * @method getRubrics()
+ * @method getStatGoals($param = array())
+ * @method getTimeZones()
+ * @method getVersion()
+ * @method pingAPI()
  */
 
 class YiiDirectApi extends CApplicationComponent
@@ -94,68 +149,6 @@ class YiiDirectApi extends CApplicationComponent
 	const TOKEN_URL = 'https://oauth.yandex.ru/token';
 	const JSON_API_URL = 'https://api.direct.yandex.ru/v4/json/';
 
-	# Названия методов
-	# Методы для работы с кампаниями
-	const M_ARCHIVE_CAMPAIGN = 'ArchiveCampaign';
-	const M_CREATE_OR_UPDATE_CAMPAIGN = 'CreateOrUpdateCampaign';
-	const M_DELETE_CAMPAIGN = 'DeleteCampaign';
-	const M_GET_CAMPAIGN_PARAMS = 'GetCampaignParams';
-	const M_GET_CAMPAIGNS_LIST = 'GetCampaignsList';
-	const M_GET_CAMPAIGNS_LIST_FILTER = 'GetCampaignsListFilter';
-	const M_GET_CAMPAIGNS_PARAMS = 'GetCampaignsParams';
-	const M_RESUME_CAMPAIGN = 'ResumeCampaign';
-	const M_STOP_CAMPAIGN = 'StopCampaign';
-	const M_UN_ARCHIVE_CAMPAIGN = 'UnArchiveCampaign';
-	
-	# Методы для работы с объявлениями
-	const M_ARCHIVE_BANNERS = 'ArchiveBanners';
-	const M_CREATE_OR_UPDATE_BANNERS = 'CreateOrUpdateBanners';
-	const M_DELETE_BANNERS = 'DeleteBanners';
-	const M_GET_BANNERS = 'GetBanners';
-	const M_GET_BANNER_PHRASES = 'GetBannerPhrases';
-	const M_GET_BANNER_PHRASES_FILTER = 'GetBannerPhrasesFilter';
-	const M_MODERATE_BANNERS = 'ModerateBanners';
-	const M_RESUME_BANNERS = 'ResumeBanners';
-	const M_STOP_BANNERS = 'StopBanners';
-	const M_UN_ARCHIVE_BANNERS = 'UnArchiveBanners';
-
-	# Методы для работы со ставками
-	const M_SET_AUTO_PRICE = 'SetAutoPrice';
-	const M_UPDATE_PRICES = 'UpdatePrices';
-
-	# Методы для работы с отчетами
-	const M_GET_BALANCE = 'GetBalance';
-	const M_GET_SUMMARY_STAT = 'GetSummaryStat';
-	const M_CREATE_NEW_REPORT = 'CreateNewReport';
-	const M_DELETE_REPORT = 'DeleteReport';
-	const M_GET_REPORT_LIST = 'GetReportList';
-	const M_CREATE_NEW_WORDSTAT_REPORT = 'CreateNewWordstatReport';
-	const M_DELETE_WORDSTAT_REPORT = 'DeleteWordstatReport';
-	const M_GET_WORDSTAT_REPORT = 'GetWordstatReport';
-	const M_GET_WORDSTAT_REPORT_LIST = 'GetWordstatReportList';
-	const M_CREATE_NEW_FORECAST = 'CreateNewForecast';
-	const M_DELETE_FORECAST_REPORT = 'DeleteForecastReport';
-	const M_GET_FORECAST = 'GetForecast';
-	const M_GET_FORECAST_LIST = 'GetForecastList';
-	
-	# Методы работы с клиентами
-	const M_CREATE_NEW_SUBCLIENT = 'CreateNewSubclient';
-	const M_GET_CLIENT_INFO = 'GetClientInfo';
-	const M_GET_CLIENTS_LIST = 'GetClientsList';
-	const M_GET_CLIENTS_UNITS = 'GetClientsUnits';
-	const M_GET_SUB_CLIENTS = 'GetSubClients';
-	const M_UPDATE_CLIENT_INFO = 'UpdateClientInfo';
-
-	# Прочие методы
-	const M_GET_AVAILABLE_VERSIONS = 'GetAvailableVersions';
-	const M_GET_CHANGES = 'GetChanges';
-	const M_GET_REGIONS = 'GetRegions';
-	const M_GET_RUBRICS = 'GetRubrics';
-	const M_GET_STAT_GOALS = 'GetStatGoals';
-	const M_GET_TIME_ZONES = 'GetTimeZones';
-	const M_GET_VERSION = 'GetVersion';
-	const M_PING_API = 'PingAPI';
-
 	public function init()
 	{
 		# Инициализируем CURL
@@ -165,9 +158,9 @@ class YiiDirectApi extends CApplicationComponent
 
 		# Установим строку для авторизации
 		$this->_authorizeLink = self::AUTHORIZE_URL . '?' . http_build_query(array(
-			'response_type' => $this->responseType,
-			'client_id' => $this->id,
-		));
+				'response_type' => $this->responseType,
+				'client_id' => $this->id,
+			));
 
 		# Если язык не установлен, тогда возьмем его из установок приложения
 		if (!$this->locale) {
@@ -323,7 +316,7 @@ class YiiDirectApi extends CApplicationComponent
 	 * Выполняем запрос
 	 * @return array
 	 */
-	private function _execCurl($data) 
+	private function _execCurl($data)
 	{
 		curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $data);
 		$c = curl_exec($this->_ch);
@@ -387,5 +380,17 @@ class YiiDirectApi extends CApplicationComponent
 			}
 		}
 		return $struct;
+	}
+
+	/**
+	 * Вызов методов
+	 * @param string $method
+	 * @param array $args
+	 * @return mixed|void
+	 */
+	public function __call($method, $args)
+	{
+		$params = empty($args) ? array() : $args[0];
+		return $this->apiQuery(ucfirst($method), $params);
 	}
 }
