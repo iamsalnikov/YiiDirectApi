@@ -91,7 +91,7 @@ class YiiDirectApi extends CApplicationComponent
      * @author Alexey Makhov <makhov.alex@gmail.com>
      * @var boolean
      */
-    public $use_sandbox = false;
+    public $useSandbox = false;
 
 	/**
 	 * Ссылка для авторизации на директе
@@ -165,7 +165,7 @@ class YiiDirectApi extends CApplicationComponent
 
 	public function init()
 	{
-        $this->_apiUrl = ($this->use_sandbox) ? self::SANDBOX_JSON_API_URL : self::JSON_API_URL;
+        $this->_apiUrl = ($this->useSandbox) ? self::SANDBOX_JSON_API_URL : self::JSON_API_URL;
 
 		# Инициализируем CURL
 		$this->_ch = curl_init();
