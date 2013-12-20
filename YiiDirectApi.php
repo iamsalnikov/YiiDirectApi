@@ -86,6 +86,13 @@ class YiiDirectApi extends CApplicationComponent
 	 */
 	public $locale = 'ru';
 
+    /**
+     * Песочница или боевое подключение
+     * @author Alexey Makhov <makhov.alex@gmail.com>
+     * @var boolean
+     */
+    public $useSandbox = false;
+
 	/**
 	 * Ссылка для авторизации на директе
 	 * @var string
@@ -145,16 +152,25 @@ class YiiDirectApi extends CApplicationComponent
 		CURLOPT_POST => true,
 	);
 
+    /**
+     * URL подключение к API. Либо боевой, либо песочница
+     * @var string
+     */
+    private $_apiUrl;
+
 	const AUTHORIZE_URL = 'https://oauth.yandex.ru/authorize';
 	const TOKEN_URL = 'https://oauth.yandex.ru/token';
 	const JSON_API_URL = 'https://api.direct.yandex.ru/v4/json/';
+	const SANDBOX_JSON_API_URL = 'https://api-sandbox.direct.yandex.ru/json-api/v4/';
 
 	public function init()
 	{
+        $this->_apiUrl = ($this->useSandbox) ? self::SANDBOX_JSON_API_URL : self::JSON_API_URL;
+
 		# Инициализируем CURL
 		$this->_ch = curl_init();
 		curl_setopt_array($this->_ch, $this->_curlOptions);
-		curl_setopt($this->_ch, CURLOPT_URL, self::JSON_API_URL);
+		curl_setopt($this->_ch, CURLOPT_URL, $this->_apiUrl);
 
 		# Установим строку для авторизации
 		$this->_authorizeLink = self::AUTHORIZE_URL . '?' . http_build_query(array(
@@ -346,13 +362,12 @@ class YiiDirectApi extends CApplicationComponent
 			'token' => $this->_token
 		);
 
-		$params = $this->utf8($params);
-		$params = CJSON::encode($params);
+        $params = $this->utf8($params);
+        $params = CJSON::encode($params);
+        $result = $this->_execCurl($params);
+        $result = CJSON::decode($result);
 
-		$result = $this->_execCurl($params);
-		$result = CJSON::decode($result);
-
-		# Если все прошло без ошибок
+        # Если все прошло без ошибок
 		if (!empty($result)) {
 			if (isset($result['error_code']) && isset($result['error_str'])) {
 				$this->setError($result['error_code'])->setErrorStr($result['error_str']);
